@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UpdateProfileForm, UpdateUserForm
 from django.contrib.auth. forms import AuthenticationForm
+from django.contrib.auth.models import User
 from django.urls import reverse
 from django.http import HttpResponse
 
@@ -64,6 +65,8 @@ def profile(request):
             profile_form.save()
             messages.success(request, 'Your profile is updated successfully')
             return redirect(to='profile')
+        else:
+            messages.error(request, "Please correct the error below")
     else:
         user_form = UpdateUserForm(instance=request.user)
         profile_form = UpdateProfileForm(instance=request.user.profile)
