@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout 
+from django.contrib.auth import authenticate, login as auth_login, logout 
 from .forms import SignupForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -21,7 +21,7 @@ def register(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect('/')
     else:
         form = SignupForm()
     return render(request, 'store/register.html', {'form': form})
@@ -35,7 +35,7 @@ def login(request):
             password = form.cleaned_data.get('password')
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                login(request, user)    
+                auth_login(request, user)    
                 # redirect tin the default page
                 next_url = request.POST.get('next', reverse('home'))
                 return redirect(next_url)
