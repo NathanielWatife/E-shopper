@@ -43,7 +43,7 @@ def add_to_cart(request, pk):
         messages.success(request, "Item has been added to Cart")
     return redirect('cart')
 
-def remove_from_cart(request):
+def remove_from_cart(request, pk):
     cart_item = get_object_or_404(CartItem, pk=pk, user=request.user)
     cart_item.delete()
     messages.success(request, "Item has been removed from Cart")
