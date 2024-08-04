@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
+import os
 
 # Create your models here.
 class Profile(models.Model):
@@ -11,15 +12,20 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-    
-    # resizing the image
+
     def save(self, *args, **kwargs):
-        super().save()
-        img = Image.open(self.profile_picture.path)
-        if img.height > 100 or img.width > 100:
-            new_img = (100, 100)
-            img.thumbnail(new_img)
-            img.save(self.profile_picture.path)
+        # Call the original save method
+        super().save(*args, **kwargs)
+
+        # Image processing
+        if self.profile_picture:
+            img = Image.open(self.profile_picture.path)
+
+            # Resize image
+            if img.height > 300 or img.width > 300:
+                output_size = (300, 300)
+                img.thumbnail(output_size)
+                img.save(self.profile_picture.path)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
