@@ -14,7 +14,12 @@ from django.http import HttpResponse
 # Home page
 @login_required(login_url='login')
 def home(request):
-    return render(request, 'store/index.html')
+    products = Product.objects.all()
+    return render(request, 'store/index.html', {'products': products})
+
+# @login_required(login_url='login')
+# def detail(request):
+#     return render(request, "store/detail.html")
 
 
 # product lists and details
@@ -22,49 +27,49 @@ def product_list(request):
     products = Product.objects.all()
     return render(request, "store/product_list.html", {'products': products})
 
-def product_details(request, pk):
+def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     return render(request, "store/product_detail.html", {'product': product})
 
 
 
 # cart views
-def cart_item(request):
-    cart_items = CartItem.objects.filter(user=request.user)
-    return render(request, 'store/cart.html', {'cart_items': cart_items})
+# def cart_item(request):
+#     cart_items = CartItem.objects.filter(user=request.user)
+#     return render(request, 'store/cart.html', {'cart_items': cart_items})
 
 # add/remove to cart
-def add_to_cart(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-        messages.success(request, "Item has been added to Cart")
-    return redirect('cart')
+# def add_to_cart(request, pk):
+#     product = get_object_or_404(Product, pk=pk)
+#     cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+#     if not created:
+#         cart_item.quantity += 1
+#         cart_item.save()
+#         messages.success(request, "Item has been added to Cart")
+#     return redirect('cart')
 
-def remove_from_cart(request, pk):
-    cart_item = get_object_or_404(CartItem, pk=pk, user=request.user)
-    cart_item.delete()
-    messages.success(request, "Item has been removed from Cart")
-    return redirect('cart')
+# def remove_from_cart(request, pk):
+#     cart_item = get_object_or_404(CartItem, pk=pk, user=request.user)
+#     cart_item.delete()
+#     messages.success(request, "Item has been removed from Cart")
+#     return redirect('cart')
 
 
 
 # product review
-def review_create(request, product_pk):
-    product = get_object_or_404(Product, pk=product_pk)
-    if request.method == 'POST':
-        form  = ProductReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.product = product
-            review.user = request.user
-            review.save()
-            return redirect('product_detail', pk=product_pk)
-    else:
-        form = ProductReviewForm()
-    return render(request, 'store/review_form.html', {"form": form, "product":product})
+# def review_create(request, product_pk):
+#     product = get_object_or_404(Product, pk=product_pk)
+#     if request.method == 'POST':
+#         form  = ProductReviewForm(request.POST)
+#         if form.is_valid():
+#             review = form.save(commit=False)
+#             review.product = product
+#             review.user = request.user
+#             review.save()
+#             return redirect('product_detail', pk=product_pk)
+#     else:
+#         form = ProductReviewForm()
+#     return render(request, 'store/review_form.html', {"form": form, "product":product})
 
 
 
