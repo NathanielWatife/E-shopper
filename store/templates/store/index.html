@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>EShopper - Bootstrap Shop Template</title>
+    <title>Welcome {{ user.username }} </title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -57,14 +57,17 @@
                 </form>
             </div>
             <div class="col-lg-3 col-6 text-right">
-                <a href="" class="btn border">
-                    <i class="fas fa-heart text-primary"></i>
-                    <span class="badge">0</span>
-                </a>
-                <a href="" class="btn border">
-                    <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
-                </a>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url "cart" %}" class="btn border">
+                        <i class="fas fa-shopping-cart text-primary"></i>
+                        <span class="badge">0</span>
+                    </a>
+                {% else %}
+                    <a href="" class="btn border">
+                        <i class="fas fa-shopping-cart text-primary"></i>
+                        <span class="badge">0</span>
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -112,21 +115,14 @@
                         {% if request.user.is_authenticated %}
                         <div class="navbar-nav mr-auto py-0">
                             <a href="{% url "home" %}" class="nav-item nav-link active">Home</a>
-                            <a href="shop.html" class="nav-item nav-link">Shop</a>
-                            <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                        
-                                <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="" class="dropdown-item">Shopping Cart</a>
-                                    <a href="checkout.html" class="dropdown-item">Checkout</a>
-                                </div>
-                            </div>
-                            <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <a href="{% url "about" %}" class="nav-item nav-link">About</a>
+                            <a href="{% url "contact" %}" class="nav-item nav-link">Contact</a>
+                            <a href="" class="nav-item nav-link" >Checkout</a>
+                            <a href="{% url "profile" %}" class="nav-item nav-link">My Account</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0">
                             <div class="row my-1 p-0.1">
-                                <img class="rounded-circle profile-picture" src="{{ user.profile.profile_picture.url }} " style="cursor: pointer;" alt="{{ user.profile.full_name }}"/>
+                                <a href="{% url "profile" %}"><img class="rounded-circle profile-picture" src="{{ user.profile.profile_picture.url }} " style="cursor: pointer;" alt="{{ user.profile.full_name }}"/></a>
                             </div>
                             <a href="" class="nav-item nav-link">Hi {{ user.username }}!</a>
                             <a href="{% url "logout" %}" class="nav-item nav-link">Logout</a>
@@ -213,14 +209,17 @@
 
     <!-- Categories Start -->
     <div class="container-fluid pt-5">
+        {% for category in categories %}
+     
+        
         <div class="row px-xl-5 pb-3">
             <div class="col-lg-4 col-md-6 pb-1">
                 <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                    <p class="text-right">15 Products</p>
+                    <p class="text-right">{{ category.description }}</p>
                     <a href="" class="cat-img position-relative overflow-hidden mb-3">
-                        <img class="img-fluid" src="{% static 'store/img/cat-1.jpg' %}" alt="">
+                        <img class="img-fluid" src="{{ categy.image.url }}" alt="">
                     </a>
-                    <h5 class="font-weight-semi-bold m-0">Men's dresses</h5>
+                    <h5 class="font-weight-semi-bold m-0">{{ category.name }}</h5>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 pb-1">
@@ -269,6 +268,7 @@
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
     <!-- Categories End -->
 
@@ -321,12 +321,11 @@
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="{% url "product_detail" pk=product.pk %}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                            <a href="{% url 'product_detail' pk=product.pk %}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
                             <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                         </div>
                     </div>
                 </div>
-            
             {% endfor %}
         </div>
     </div>

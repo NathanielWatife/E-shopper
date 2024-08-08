@@ -38,7 +38,7 @@ class UpdateUserForm(forms.ModelForm):
 class UpdateProfileForm(forms.ModelForm):
     full_name = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'placeholder': 'Username', 'class': 'form-control', }))
     profile_picture = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control-file'}))
-    shipping_address = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'placeholder': 'Username', 'class': 'form-control', }))
+    shipping_address = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={'placeholder': 'Shipping Address', 'class': 'form-control', }))
 
 
     class Meta:

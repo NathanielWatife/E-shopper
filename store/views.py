@@ -17,9 +17,13 @@ def home(request):
     products = Product.objects.all()
     return render(request, 'store/index.html', {'products': products})
 
-# @login_required(login_url='login')
-# def detail(request):
-#     return render(request, "store/detail.html")
+@login_required(login_url='login')
+def about(request):
+    return render(request, "store/about.html")
+
+@login_required(login_url='login')
+def contact(request):
+    return render(request, "store/contact.html")
 
 
 # product lists and details
@@ -33,10 +37,25 @@ def product_detail(request, pk):
 
 
 
+# Categories
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, "store/category_list.html", {"categories": categories})
+
+def category_detail(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    products= Product.objects.filter(category=category)
+    return render(request, 'store/category_detail.html', {
+            "category": category,
+            'products':  products
+        })
+
+
+
 # cart views
-# def cart_item(request):
-#     cart_items = CartItem.objects.filter(user=request.user)
-#     return render(request, 'store/cart.html', {'cart_items': cart_items})
+def cart_item(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    return render(request, 'store/cart.html', {'cart_items': cart_items})
 
 # add/remove to cart
 # def add_to_cart(request, pk):
@@ -57,19 +76,19 @@ def product_detail(request, pk):
 
 
 # product review
-# def review_create(request, product_pk):
-#     product = get_object_or_404(Product, pk=product_pk)
-#     if request.method == 'POST':
-#         form  = ProductReviewForm(request.POST)
-#         if form.is_valid():
-#             review = form.save(commit=False)
-#             review.product = product
-#             review.user = request.user
-#             review.save()
-#             return redirect('product_detail', pk=product_pk)
-#     else:
-#         form = ProductReviewForm()
-#     return render(request, 'store/review_form.html', {"form": form, "product":product})
+def review_create(request, product_pk):
+    product = get_object_or_404(Product, pk=product_pk)
+    if request.method == 'POST':
+        form  = ProductReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.save()
+            return redirect('product_detail', pk=product_pk)
+    else:
+        form = ProductReviewForm()
+    return render(request, 'store/review_form.html', {"form": form, "product":product})
 
 
 
@@ -83,9 +102,12 @@ def product_detail(request, pk):
 #  User account authentication and profile details
 @login_required(login_url='login')
 def profile(request):
+    # Ensure the user has a profile
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
         user_form = UpdateUserForm(request.POST, instance=request.user)
-        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=profile)
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
@@ -96,7 +118,7 @@ def profile(request):
             messages.error(request, "Please correct the error below")
     else:
         user_form = UpdateUserForm(instance=request.user)
-        profile_form = UpdateProfileForm(instance=request.user.profile)
+        profile_form = UpdateProfileForm(instance=profile)
 
     return render(request, 'store/profile.html', {'user_form': user_form, 'profile_form': profile_form})
 

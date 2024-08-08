@@ -8,7 +8,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=255)
     shipping_address = models.TextField()
-    profile_picture = models.ImageField(default='default.jpg', upload_to='profile_pics/', null=True, blank=True)
+    profile_picture = models.ImageField(default='', upload_to='profile_pics/', null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -30,6 +30,7 @@ class Profile(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
+    img = models.ImageField(upload_to='category_images/', default='default2.jpg',)
 
     def __str__(self):
         return self.name
@@ -54,12 +55,25 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.product.name} ({self.quantity})"
+    
+    def get_total_price(self):
+        return self.quantity * self.product.price
 
 class Order(models.Model):
+    PENDING = 'Pending'
+    SHIPPED = 'Shipped'
+    COMPLETED = 'Completed'
+    STATUS_CHOICES = [
+            (PENDING, 'Pending'),
+            (SHIPPED, 'Shipped'),
+            (COMPLETED, 'Completed')
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cart_items = models.ManyToManyField(CartItem)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING)
+
 
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
@@ -71,6 +85,9 @@ class ProductReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
     comment = models.TextField()
+
+    class Meta:
+        unique_together=('product', 'user')
 
     def __str__(self):
         return f"Review by {self.user.username} for {self.product.name}"

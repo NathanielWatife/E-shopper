@@ -73,7 +73,7 @@
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                         
                                 <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="{% url "cart" %}" class="dropdown-item">Shopping Cart</a>
+                                    <a href="" class="dropdown-item">Shopping Cart</a>
                                     <a href="checkout.html" class="dropdown-item">Checkout</a>
                                 </div>
                             </div>
@@ -102,44 +102,29 @@
 
     <!-- Featured Start -->
     <div class="container mt-5">
-        <h1>{{ product.name }}</h1>
-        <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
-        <p>{{ product.description }}</p>
-        <p>Price: ${{ product.price }}</p>
-        <p>Stock: {{ product.stock }}</p>
-        
-        <form action="{% url 'add_to_cart' pk=product.pk %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-primary">Add to Cart</button>
-        </form>
-
-        <h2>Reviews</h2>
-        <form action="{% url 'review_create' product_pk=product.pk %}" method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="rating" class="form-label">Rating</label>
-                <select id="rating" name="rating" class="form-select" required>
-                    <option value="">Select rating</option>
-                    {% for i in range(1, 6) %}
-                        <option value="{{ i }}">{{ i }}</option>
-                    {% endfor %}
-                </select>
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
             </div>
-            <div class="mb-3">
-                <label for="comment" class="form-label">Comment</label>
-                <textarea id="comment" name="comment" class="form-control" rows="3" required></textarea>
+            <div class="col-md-6">
+                <h1>{{ product.name }}</h1>
+                <p>{{ product.description }}</p>
+                <h3>${{ product.price }}</h3>
+                <p>Stock: {{ product.stock }}</p>
+                <a href="" class="btn btn-primary">Add to Cart</a>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Review</button>
-        </form>
-
-        <div class="mt-4">
-            {% for review in product.productreview_set.all %}
-                <div class="border p-3 mb-2">
-                    <h5>Review by {{ review.user.username }} - Rating: {{ review.rating }}</h5>
-                    <p>{{ review.comment }}</p>
-                </div>
-            {% endfor %}
         </div>
+        <hr>
+        <h2>Reviews</h2>
+        {% for review in product.productreview_set.all %}
+            <div class="review mb-4">
+                <h5>{{ review.user.username }}</h5>
+                <p>Rating: {{ review.rating }}/5</p>
+                <p>{{ review.comment }}</p>
+            </div>
+        {% empty %}
+            <p>No reviews yet.</p>
+        {% endfor %}
     </div>
     <!-- Featured End -->
 
